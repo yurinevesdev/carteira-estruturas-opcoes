@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carteira de Opções Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">Carteira Pro</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-tab="dashboard">
+                    <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="operacoes">
+                    <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                    </svg>
+                    <span>Operações</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="lancamentos">
+                    <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M11.8 2.8L3 10.4V21h18V10.4l-8.8-7.6H11.8zM12 4.5l7 6.1v8.4h-4v-6H9v6H5v-8.4l7-6.1z" />
+                    </svg>
+                    <span>Lançamentos</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="relatorios">
+                    <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M8 10H5V7h3v3zm5 0h-3V7h3v3zm5 0h-3V7h3v3zm-5 5h-3v-3h3v3zm5 0h-3v-3h3v3zm-5 5h-3v-3h3v3zm5 0h-3v-3h3v3zm-5-10h-3V7h3v3z" />
+                    </svg>
+                    <span>Relatórios</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="configuracoes">
+                    <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M19.4 12.3c.2-.4.2-.9 0-1.3l-1.8-3.1c-.3-.5-.8-.8-1.4-.8h-3.5c-.5 0-1-.2-1.4-.6L9.7 4.9c-.4-.4-.9-.6-1.4-.6H4.8c-.6 0-1.1.3-1.4.8L1.6 8.8c-.2.4-.2.9 0 1.3l1.8 3.1c.3.5.8.8 1.4.8h3.5c.5 0 1 .2 1.4.6l1.6 2.6c.4.4.9.6 1.4.6h3.5c.6 0 1.1-.3 1.4-.8l1.8-3.1zM12 15.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z" />
+                    </svg>
+                    <span>Configurações</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <div id="dashboard" class="tab-content active">
+                    <div class="stats">
+                        <div class="stat-card card" id="dashTotalOps">
+                            <h4>Total de Operações</h4>
+                            <div class="value">0</div>
+                        </div>
+                        <div class="stat-card card" id="dashResultado">
+                            <h4>Resultado Total</h4>
+                            <div class="value">R$ 0,00</div>
+                        </div>
+                        <div class="stat-card card">
+                            <h4>Operações Abertas</h4>
+                            <div class="value" id="dashAbertas">0</div>
+                        </div>
+                        <div class="stat-card card">
+                            <h4>Taxa de Acerto</h4>
+                            <div class="value" id="dashTaxaAcerto">0%</div>
+                        </div>
+                        <div class="stat-card card">
+                            <h4>Melhor Operação</h4>
+                            <div class="value" id="dashMelhor">R$ 0,00</div>
+                        </div>
+                        <div class="stat-card card">
+                            <h4>Pior Operação</h4>
+                            <div class="value" id="dashPior">R$ 0,00</div>
+                        </div>
+                        <div class="stat-card card special" id="dashPrecoAtivoContainer" style="display: none;">
+                            <h4>Preço Ativo-Objeto</h4>
+                            <div class="value" id="dashPrecoAtivo">Buscando...</div>
+                        </div>
+                    </div>
+
+                    <div class="resume-card card">
+                        <h4>Operações Recentes</h4>
+                        <div id="operacoesRecentes">
+                            <p>Nenhuma operação cadastrada ainda.</p>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions card">
+                        <h4>Ações Rápidas</h4>
+                        <button class="btn btn-success" id="btnNovaOperacao">+ Nova Operação</button>
+                        <button class="btn btn-info" id="btnNovoLancamento">+ Novo Lançamento</button>
+                        <button class="btn" id="btnBackup">📥 Backup Automático</button>
+                        <button class="btn btn-warning" id="btnResumoMes">📊 Resumo do Mês</button>
+                    </div>
+                </div>
+
+                <div id="operacoes" class="tab-content">
+                    <div class="stats">
+                        <div class="stat-card card">
+                            <h4>Total de Operações</h4>
+                            <div class="value" id="totalOperacoes">0</div>
+                        </div>
+                        <div class="stat-card card" id="resultadoCard">
+                            <h4>Resultado Total</h4>
+                            <div class="value" id="resultadoTotal">R$ 0,00</div>
+                        </div>
+                        <div class="stat-card card">
+                            <h4>Operações Abertas</h4>
+                            <div class="value" id="operacoesAbertas">0</div>
+                        </div>
+                    </div>
+
+                    <div class="filters card">
+                        <h4>Filtros</h4>
+                        <div class="filter-grid">
+                            <div class="form-group">
+                                <label>Estratégia</label>
+                                <select id="filtroEstrategia">
+                                    <option value="">Todas</option>
+                                    <option value="TERF">TERF</option>
+                                    <option value="CALL">CALL</option>
+                                    <option value="PUT">PUT</option>
+                                    <option value="SWING">SWING</option>
+                                    <option value="DAY_TRADE">Day Trade</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Ativo</label>
+                                <input type="text" id="filtroAtivo" placeholder="Ex: USIM5">
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select id="filtroStatus">
+                                    <option value="">Todos</option>
+                                    <option value="aberta">Abertas</option>
+                                    <option value="fechada">Fechadas</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section card">
+                        <h3>Nova Operação</h3>
+                        <form id="formOperacao">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Data Entrada</label>
+                                    <input type="date" id="dataEntrada" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Estratégia</label>
+                                    <select id="estrategia" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="TERF">TERF</option>
+                                        <option value="CALL">CALL</option>
+                                        <option value="PUT">PUT</option>
+                                        <option value="SWING">SWING</option>
+                                        <option value="DAY_TRADE">Day Trade</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Ativo</label>
+                                    <input type="text" id="ativo" placeholder="Ex: USIM5" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Data Saída</label>
+                                    <input type="date" id="dataSaida">
+                                </div>
+                                <div class="form-group">
+                                    <label>Observações</label>
+                                    <textarea id="observacoes" rows="2"
+                                        placeholder="Observações sobre a operação..."></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success">Salvar Operação</button>
+                            <button type="button" class="btn" id="btnLimparFormOperacao">Limpar</button>
+                        </form>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Data Entrada</th>
+                                    <th>Estratégia</th>
+                                    <th>Ativo</th>
+                                    <th>Data Saída</th>
+                                    <th>Resultado (R$)</th>
+                                    <th>Performance</th>
+                                    <th>Observações</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaOperacoes">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="lancamentos" class="tab-content">
+                    <div class="form-section card">
+                        <h3 id="tituloFormLancamento">Novo Lançamento</h3>
+                        <form id="formLancamento">
+                            <input type="hidden" id="editandoIndex" value="">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Estrutura ID</label>
+                                    <select id="estruturaId" required>
+                                        <option value="">Selecione uma operação...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Ativo</label>
+                                    <input type="text" id="ativoLancamento" placeholder="Ex: USIM5" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tipo</label>
+                                    <select id="tipo" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="AÇÃO">AÇÃO</option>
+                                        <option value="CALL">CALL</option>
+                                        <option value="PUT">PUT</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Operação</label>
+                                    <select id="operacao" required>
+                                        <option value="COMPRA">COMPRA</option>
+                                        <option value="VENDA">VENDA</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Strike</label>
+                                    <input type="number" step="0.01" id="strike" placeholder="0.00">
+                                </div>
+                                <div class="form-group">
+                                    <label>Vencimento</label>
+                                    <input type="date" id="vencimento">
+                                </div>
+                                <div class="form-group">
+                                    <label>Quantidade</label>
+                                    <input type="number" id="quantidade" placeholder="100" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Preço Entrada</label>
+                                    <input type="number" step="0.01" id="precoEntrada" placeholder="0.00" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Preço Saída</label>
+                                    <input type="number" step="0.01" id="precoSaida" placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="group-buttons">
+                                <button type="submit" class="btn btn-success" id="btnSalvarLancamento">Salvar
+                                    Lançamento</button>
+                                <button type="button" class="btn" id="btnCancelarEdicaoLancamento">Cancelar</button>
+                                <button type="button" class="btn" id="btnLimparFormLancamento">Limpar</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Estrutura ID</th>
+                                    <th>Ativo</th>
+                                    <th>Tipo</th>
+                                    <th>Operação</th>
+                                    <th>Strike</th>
+                                    <th>Vencimento</th>
+                                    <th>Quantidade</th>
+                                    <th>Preço Entrada</th>
+                                    <th>Preço Atual</th>
+                                    <th>Resultado Aberto</th>
+                                    <th>Preço Saída</th>
+                                    <th>Resultado (R$)</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaLancamentos">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="relatorios" class="tab-content">
+                    <div class="form-section card">
+                        <h3>Relatórios e Análises</h3>
+                        <div class="form-grid">
+                            <div>
+                                <button class="btn btn-info" id="btnRelatorioMensal">Relatório Mensal</button>
+                                <button class="btn btn-info" id="btnRelatorioPorAtivo">Por Ativo</button>
+                                <button class="btn btn-info" id="btnRelatorioPorEstrategia">Por Estratégia</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="relatorioContent" class="resume-card card" style="display: none;">
+                        <h4 id="relatorioTitulo">Relatório</h4>
+                        <div id="relatorioBody"></div>
+                    </div>
+                </div>
+
+                <div id="configuracoes" class="tab-content">
+                    <div class="export-section card">
+                        <h3>Gerenciar Dados</h3>
+                        <div class="form-grid">
+                            <div>
+                                <button class="btn" id="btnExportarBackup">📥 Exportar Backup Completo</button>
+                                <button class="btn btn-warning" id="btnExportarPDF">📄 Exportar Relatório
+                                    PDF</button>
+                                <button class="btn btn-danger" id="btnLimparDados">🗑️ Limpar Todos os
+                                    Dados</button>
+                            </div>
+                            <div class="file-input">
+                                <label>Importar Backup:</label>
+                                <input type="file" id="fileInput" accept=".json">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section card">
+                        <h3>Configurações do Sistema</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Auto-backup a cada:</label>
+                                <select id="autoBackupInterval">
+                                    <option value="10">10 operações</option>
+                                    <option value="25" selected>25 operações</option>
+                                    <option value="50">50 operações</option>
+                                    <option value="100">100 operações</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Moeda padrão:</label>
+                                <select id="moedaPadrao">
+                                    <option value="BRL" selected>Real (R$)</option>
+                                    <option value="USD">Dólar ($)</option>
+                                    <option value="EUR">Euro (€)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

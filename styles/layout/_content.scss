@@ -1,0 +1,22 @@
+@use "../themes/default" as *;
+
+/* Content Layout */
+
+.main-content {
+  flex: 1;
+  padding: $spacing-xl;
+  background-color: $color-background;
+  overflow-y: auto;
+
+  .content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .tab-content {
+    display: none;
+    &.active {
+      display: block;
+    }
+  }
+}

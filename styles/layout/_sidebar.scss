@@ -1,0 +1,56 @@
+@use "../themes/default" as *;
+
+/* Sidebar Layout */
+
+.sidebar {
+  background-color: $color-sidebar-bg;
+  color: $color-sidebar-text;
+  width: 250px;
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+
+  .sidebar-header {
+    margin-bottom: $spacing-xl;
+    .sidebar-title {
+      color: $color-sidebar-text-hover;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+    }
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: $spacing-sm $spacing-md;
+      border-radius: $border-radius;
+      text-decoration: none;
+      color: $color-sidebar-text;
+      font-weight: 500;
+      transition: background-color 0.3s, color 0.3s;
+
+      .nav-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: $spacing-md;
+      }
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: $color-sidebar-text-hover;
+      }
+
+      &.active {
+        background-color: $color-sidebar-active-bg;
+        color: $color-sidebar-text-hover;
+      }
+    }
+  }
+}

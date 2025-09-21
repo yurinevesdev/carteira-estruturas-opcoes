@@ -1,0 +1,36 @@
+@use "../themes/default" as *;
+
+/* Card Styles */
+
+.card {
+  background-color: $color-content-bg;
+  border-radius: $border-radius;
+  padding: $spacing-lg;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: $spacing-lg;
+}
+
+.stat-card {
+  /* This class will be used with .card */
+  text-align: center;
+
+  h4 {
+    font-size: 1rem;
+    color: $color-text-light;
+    margin-bottom: $spacing-sm;
+  }
+
+  .value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  &.positive .value {
+    color: $color-success;
+  }
+
+  &.negative .value {
+    color: $color-danger;
+  }
+}

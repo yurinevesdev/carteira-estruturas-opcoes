@@ -1,0 +1,36 @@
+@use "../themes/default" as *;
+@use "sass:color";
+
+/* Table Styles */
+
+.table-container {
+  overflow-x: auto;
+  background-color: $color-content-bg;
+  border-radius: $border-radius;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: $spacing-md;
+    text-align: left;
+    border-bottom: 1px solid $color-border;
+    white-space: nowrap;
+  }
+
+  th {
+    background-color: $color-background;
+    font-weight: 600;
+    color: $color-text-light;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+
+  tbody tr:hover {
+    background-color: color.adjust($color-background, $lightness: 2%);
+  }
+}

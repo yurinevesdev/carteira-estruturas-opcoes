@@ -1,0 +1,25 @@
+{
+  "name": "carteira-opcoes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"npm run watch:sass\" \"node src/server.js\"",
+    "sass": "sass styles/main.scss public/style.css",
+    "watch:sass": "sass --watch styles/main.scss:public/style.css"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.12.2",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "sass": "^1.93.0",
+    "concurrently": "^8.2.2"
+  }
+}

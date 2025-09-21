@@ -1,0 +1,52 @@
+{
+  "operacoes": [
+    {
+      "id": 1,
+      "estrutura": 1,
+      "dataEntrada": "2025-09-20",
+      "estrategia": "TERF",
+      "ativo": "USIM5",
+      "dataSaida": "",
+      "observacoes": "TERF USIM5"
+    }
+  ],
+  "lancamentos": [
+    {
+      "estruturaId": 1,
+      "ativo": "USIMN478",
+      "tipo": "PUT",
+      "operacao": "COMPRA",
+      "strike": 4.78,
+      "vencimento": "2026-02-20",
+      "quantidade": 100,
+      "precoEntrada": 0.46,
+      "precoSaida": 0,
+      "resultado": 0
+    },
+    {
+      "estruturaId": 1,
+      "ativo": "USIM5",
+      "tipo": "AÇÃO",
+      "operacao": "COMPRA",
+      "strike": 0,
+      "vencimento": "",
+      "quantidade": 100,
+      "precoEntrada": 4.52,
+      "precoSaida": 0,
+      "resultado": 0
+    },
+    {
+      "estruturaId": 1,
+      "ativo": "USIMJ482",
+      "tipo": "CALL",
+      "operacao": "VENDA",
+      "strike": 4.82,
+      "vencimento": "2025-10-17",
+      "quantidade": 100,
+      "precoEntrada": 0.12,
+      "precoSaida": 0,
+      "resultado": 0
+    }
+  ],
+  "proximoId": 3
+}
