@@ -15,24 +15,23 @@ const apiClient = axios.create({
     }
 });
 
-async function getOptionPrice(optionSymbol) {
+async function getOptionData(optionSymbol) {
     if (!optionSymbol) {
-        logger.error("Símbolo da opção não fornecido para getOptionPrice.");
+        logger.error("Símbolo da opção não fornecido para getOptionData.");
         return null;
     }
 
     try {
-        logger.info(`[API] Buscando preço para a opção: ${optionSymbol}`);
+        logger.info(`[API] Buscando dados para a opção: ${optionSymbol}`);
         const response = await apiClient.get(`/options/details/${optionSymbol.toUpperCase()}`);
-        const price = response.data?.close;
-
-        if (price === undefined || price === null) {
-            logger.warn(`Preço 'close' não encontrado no retorno da API para ${optionSymbol}`);
+        
+        if (!response.data) {
+            logger.warn(`Nenhum dado retornado da API para ${optionSymbol}`);
             return null;
         }
         
-        logger.info(`[API] Preço encontrado para ${optionSymbol}: R$ ${price}`);
-        return price;
+        logger.info(`[API] Dados encontrados para ${optionSymbol}`);
+        return response.data;
 
     } catch (error) {
         handleApiError(error, optionSymbol);
@@ -67,7 +66,7 @@ async function getAssetPrice(ticker) {
 
 function handleApiError(error, symbol) {
     if (error.response) {
-        logger.error(`Erro da API ao buscar ${symbol}: Status ${error.response.status} - ${JSON.stringify(error.response.data)}`);
+        logger.error(`Erro da API ao buscar ${symbol}: Status ${error.response.status} - Dados: ${JSON.stringify(error.response.data)}`);
     } else if (error.request) {
         logger.error(`Erro de rede: Não foi possível conectar à API para buscar ${symbol}`);
     } else {
@@ -75,4 +74,4 @@ function handleApiError(error, symbol) {
     }
 }
 
-module.exports = { getOptionPrice, getAssetPrice };
+module.exports = { getOptionData, getAssetPrice };

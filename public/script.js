@@ -128,45 +128,63 @@ document.getElementById('formOperacao').addEventListener('submit', function (e) 
     verificarAutoBackup();
 });
 
-document.getElementById('formLancamento').addEventListener('submit', function (e) {
+document.getElementById('formLancamento').addEventListener('submit', async function (e) { // made async
     e.preventDefault();
 
-    const precoEntrada = parseFloat(document.getElementById('precoEntrada').value);
-    const precoSaida = parseFloat(document.getElementById('precoSaida').value) || 0;
-    const quantidade = parseInt(document.getElementById('quantidade').value);
-    const tipo = document.getElementById('tipo').value;
-    const operacao = document.getElementById('operacao').value;
-    const editandoIndex = document.getElementById('editandoIndex').value;
-
-    const lancamento = {
-        estruturaId: parseInt(document.getElementById('estruturaId').value),
-        ativo: document.getElementById('ativoLancamento').value.toUpperCase(),
-        tipo: tipo,
-        operacao: operacao, // Adicionado
-        strike: parseFloat(document.getElementById('strike').value) || 0,
-        vencimento: document.getElementById('vencimento').value,
-        quantidade: quantidade,
-        precoEntrada: precoEntrada,
-        precoSaida: precoSaida,
-        resultado: 0 // O resultado será calculado no backend
-    };
-    
-    lancamento.resultado = calcularResultadoLancamento(lancamento);
-
-    if (editandoIndex !== '') {
-        lancamentos[parseInt(editandoIndex)] = lancamento;
-        cancelarEdicaoLancamento();
-        alert('✅ Lançamento atualizado com sucesso!');
-    } else {
-        lancamentos.push(lancamento);
-        limparFormLancamento();
-        alert('✅ Lançamento salvo com sucesso!');
+    const ativo = document.getElementById('ativoLancamento').value.toUpperCase();
+    if (!ativo) {
+        alert('Por favor, insira o código do ativo.');
+        return;
     }
 
-    salvarDados();
-    atualizarTabelas();
-    atualizarEstatisticas();
-    atualizarDashboard();
+    try {
+        // 1. Fetch option details from the backend
+        const response = await fetch(`/api/option-details/${ativo}`);
+        if (!response.ok) {
+            throw new Error(`Não foi possível encontrar os detalhes para a opção ${ativo}. Verifique o código.`);
+        }
+        const optionData = await response.json();
+
+        // 2. Build the 'lancamento' object with API data AND manual data
+        const precoEntrada = parseFloat(document.getElementById('precoEntrada').value); // READ FROM INPUT
+        const quantidade = parseInt(document.getElementById('quantidade').value);
+        const editandoIndex = document.getElementById('editandoIndex').value;
+
+        const lancamento = {
+            estruturaId: parseInt(document.getElementById('estruturaId').value),
+            ativo: ativo,
+            tipo: optionData.category, // from API
+            operacao: document.getElementById('operacao').value,
+            strike: parseFloat(optionData.strike) || 0, // from API
+            vencimento: optionData.due_date.split('T')[0], // from API
+            quantidade: quantidade,
+            precoEntrada: precoEntrada, // from INPUT
+            precoSaida: 0, 
+            resultado: 0 
+        };
+        
+        lancamento.resultado = calcularResultadoLancamento(lancamento);
+
+        // 3. Save data (existing logic)
+        if (editandoIndex !== '') {
+            lancamentos[parseInt(editandoIndex)] = lancamento;
+            cancelarEdicaoLancamento();
+            alert('✅ Lançamento atualizado com sucesso!');
+        } else {
+            lancamentos.push(lancamento);
+            limparFormLancamento();
+            alert('✅ Lançamento salvo com sucesso!');
+        }
+
+        salvarDados();
+        atualizarTabelas();
+        atualizarEstatisticas();
+        atualizarDashboard();
+
+    } catch (error) {
+        console.error('Erro ao salvar lançamento:', error);
+        alert(error.message);
+    }
 });
 
 function calcularResultadoOperacao(operacaoId) {
@@ -455,9 +473,9 @@ function verDetalhesOperacao(id) {
         <h4>Operação #${operacao.id} - ${operacao.ativo}</h4>
         <p><strong>Estratégia:</strong> ${operacao.estrategia}</p>
         <p><strong>Data Entrada:</strong> ${formatarData(operacao.dataEntrada)}</p>
-        <p><strong>Data Saída:</strong> ${operacao.dataSaida ? formatarData(operacao.dataSaida) : 'Operação ainda aberta'}</p>
+        <p><strong>Data Saída:</strong> ${operacao.dataSaida ? formatarData(op.dataSaida) : 'Operação ainda aberta'}</p>
         <p><strong>Resultado Total:</strong> <span style="color: ${resultado >= 0 ? 'green' : 'red'}; font-weight: bold;">R$ ${resultado.toFixed(2)}</span></p>
-        <p><strong>Observações:</strong> ${operacao.observacoes || 'Nenhuma observação'}</p>
+        <p><strong>Observações:</strong> ${op.observacoes || 'Nenhuma observação'}</p>
         <hr>
         <h5>Lançamentos (${lancamentosOperacao.length}):</h5>
     `;
@@ -647,8 +665,9 @@ function gerarRelatorioMensal() {
         operacoesMes.forEach(op => {
             const resultado = calcularResultadoOperacao(op.id);
             htmlRelatorio += `
-                <div style="background: white; padding: 10px; margin: 5px 0; border-radius: 5px; border-left: 4px solid ${resultado >= 0 ? 'green' : 'red'};">
-                    ${formatarData(op.dataEntrada)} - ${op.ativo} (${op.estrategia}) - <strong>R$ ${resultado.toFixed(2)}</strong>
+                <div style="background: white; padding: 10px; margin: 5px 0; border-radius: 5px; border-left: 4px solid ${cor};">
+                    <strong>${op.ativo}</strong> (${op.estrategia}) - ${status}<br>
+                    <small>${formatarData(op.dataEntrada)} | Resultado: <span style="color: ${cor}; font-weight: bold;">R$ ${resultado.toFixed(2)}</span></small>
                 </div>
             `;
         });

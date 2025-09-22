@@ -3,7 +3,7 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const express = require('express');
 const fs = require('fs');
 const logger = require('./logger');
-const { getOptionPrice, getAssetPrice } = require('./scraper.js');
+const { getOptionData, getAssetPrice } = require('./scraper.js');
 
 const app = express();
 const port = 3000;
@@ -11,12 +11,22 @@ const port = 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// Rota explícita para servir o index.html na raiz
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
 const dbPath = path.join(__dirname, '..', 'data', 'dados.json');
+
+app.get('/api/option-details/:symbol', async (req, res) => {
+    const { symbol } = req.params;
+    logger.info(`Recebida requisição de detalhes para a opção: ${symbol}`);
+    const details = await getOptionData(symbol);
+    if (details) {
+        res.json(details);
+    } else {
+        res.status(404).json({ error: `Detalhes não encontrados para ${symbol}` });
+    }
+});
 
 app.get('/api/preco-ativo/:ticker', async (req, res) => {
   const { ticker } = req.params;
@@ -32,9 +42,9 @@ app.get('/api/preco-ativo/:ticker', async (req, res) => {
 app.get('/api/preco/opcao/:ativo/:opcao', async (req, res) => {
   const { ativo, opcao } = req.params;
   logger.info(`Recebida requisição de preço para a opção: ${opcao}`);
-  const preco = await getOptionPrice(opcao);
-  if (preco !== null) {
-    res.json({ ativo, opcao, preco });
+  const optionData = await getOptionData(opcao);
+  if (optionData && optionData.close !== null) {
+    res.json({ ativo, opcao, preco: optionData.close });
   } else {
     res.status(404).json({ error: `Preço não encontrado para ${opcao}` });
   }
@@ -85,4 +95,9 @@ app.post('/api/dados', (req, res) => {
 
 app.listen(port, () => {
   logger.info(`Servidor iniciado e ouvindo em http://localhost:${port}`);
+});
+
+app.use((err, req, res, next) => {
+  logger.error(`Erro não tratado: ${err.stack}`);
+  res.status(500).send('Algo deu errado!');
 });
