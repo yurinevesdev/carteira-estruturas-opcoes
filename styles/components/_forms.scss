@@ -10,6 +10,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: $spacing-lg;
+
+  &.filter-single {
+    max-width: 400px;
+  }
 }
 
 .form-group {

@@ -1,6 +1,24 @@
 {
   "operacoes": [
     {
+      "id": 3,
+      "estrutura": 3,
+      "dataEntrada": "2025-10-01",
+      "estrategia": "TERF",
+      "ativo": "MGLU3",
+      "dataSaida": "",
+      "observacoes": "TERF MGLU3"
+    },
+    {
+      "id": 2,
+      "estrutura": 2,
+      "dataEntrada": "2025-09-27",
+      "estrategia": "TERF",
+      "ativo": "WEGE3",
+      "dataSaida": "",
+      "observacoes": "TERF WEGE3"
+    },
+    {
       "id": 1,
       "estrutura": 1,
       "dataEntrada": "2025-09-20",
@@ -44,9 +62,93 @@
       "vencimento": "2025-10-17",
       "quantidade": 100,
       "precoEntrada": 0.12,
+      "precoSaida": 0.02,
+      "resultado": 10
+    },
+    {
+      "estruturaId": 2,
+      "ativo": "WEGE3",
+      "tipo": "AÇÃO",
+      "operacao": "COMPRA",
+      "strike": 0,
+      "vencimento": "",
+      "quantidade": 100,
+      "precoEntrada": 36.32,
+      "precoSaida": 0,
+      "resultado": 0
+    },
+    {
+      "estruturaId": 2,
+      "ativo": "WEGEK393",
+      "tipo": "CALL",
+      "operacao": "VENDA",
+      "strike": 39.3,
+      "vencimento": "2025-11-21",
+      "quantidade": 100,
+      "precoEntrada": 0.73,
+      "precoSaida": 0,
+      "resultado": 0
+    },
+    {
+      "estruturaId": 2,
+      "ativo": "WEGEW373",
+      "tipo": "PUT",
+      "operacao": "COMPRA",
+      "strike": 37.3,
+      "vencimento": "2025-11-21",
+      "quantidade": 100,
+      "precoEntrada": 1.66,
+      "precoSaida": 0,
+      "resultado": 0
+    },
+    {
+      "estruturaId": 1,
+      "ativo": "USIMK480",
+      "tipo": "CALL",
+      "operacao": "VENDA",
+      "strike": 4.8,
+      "vencimento": "2025-11-21",
+      "quantidade": 100,
+      "precoEntrada": 0.13,
+      "precoSaida": 0,
+      "resultado": 0
+    },
+    {
+      "estruturaId": 3,
+      "ativo": "MGLU3",
+      "tipo": "AÇÃO",
+      "operacao": "COMPRA",
+      "strike": 0,
+      "vencimento": null,
+      "quantidade": 100,
+      "precoEntrada": 10.17,
+      "precoSaida": 0,
+      "resultado": 0
+    },
+    {
+      "estruturaId": 3,
+      "ativo": "MGLUX105",
+      "tipo": "PUT",
+      "operacao": "COMPRA",
+      "strike": 10.59,
+      "vencimento": "2025-12-19",
+      "quantidade": 100,
+      "precoEntrada": 1.4,
+      "precoSaida": 0,
+      "resultado": 0
+    },
+    {
+      "estruturaId": 3,
+      "ativo": "MGLUJ106",
+      "tipo": "CALL",
+      "operacao": "VENDA",
+      "strike": 10.69,
+      "vencimento": "2025-10-17",
+      "quantidade": 100,
+      "precoEntrada": 0.46,
       "precoSaida": 0,
       "resultado": 0
     }
   ],
-  "proximoId": 3
+  "proximoId": 4
 }

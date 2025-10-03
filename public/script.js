@@ -44,13 +44,12 @@ async function carregarDados() {
         const response = await fetch('/api/dados');
         const data = await response.json();
 
-        console.log("Dados recebidos de /api/dados:", data);
-
         operacoes = data.operacoes || [];
         lancamentos = data.lancamentos || [];
         proximoId = data.proximoId || 1;
 
-        calcularTodosResultados();
+        // A busca de preços agora é feita sob demanda na renderização da tabela
+        // calcularTodosResultados(); 
 
         const hoje = new Date().toISOString().split('T')[0];
         document.getElementById('dataEntrada').value = hoje;
