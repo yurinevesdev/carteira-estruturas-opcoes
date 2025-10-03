@@ -1,5 +1,5 @@
 const axios = require('axios');
-const logger = require('./logger'); // Importa o logger
+const logger = require('./logger');
 
 const accessToken = process.env.OPLAB_ACCESS_TOKEN;
 
@@ -24,12 +24,12 @@ async function getOptionData(optionSymbol) {
     try {
         logger.info(`[API] Buscando dados para a opção: ${optionSymbol}`);
         const response = await apiClient.get(`/options/details/${optionSymbol.toUpperCase()}`);
-        
+
         if (!response.data) {
             logger.warn(`Nenhum dado retornado da API para ${optionSymbol}`);
             return null;
         }
-        
+
         logger.info(`[API] Dados encontrados para ${optionSymbol}`);
         return response.data;
 

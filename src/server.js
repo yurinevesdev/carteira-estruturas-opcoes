@@ -3,7 +3,7 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const express = require('express');
 const fs = require('fs');
 const logger = require('./logger');
-const { getOptionData, getAssetPrice } = require('./scraper.js');
+const { getOptionData, getAssetPrice } = require('./api.js');
 
 const app = express();
 const port = 3000;
@@ -18,14 +18,14 @@ app.get('/', (req, res) => {
 const dbPath = path.join(__dirname, '..', 'data', 'dados.json');
 
 app.get('/api/option-details/:symbol', async (req, res) => {
-    const { symbol } = req.params;
-    logger.info(`Recebida requisição de detalhes para a opção: ${symbol}`);
-    const details = await getOptionData(symbol);
-    if (details) {
-        res.json(details);
-    } else {
-        res.status(404).json({ error: `Detalhes não encontrados para ${symbol}` });
-    }
+  const { symbol } = req.params;
+  logger.info(`Recebida requisição de detalhes para a opção: ${symbol}`);
+  const details = await getOptionData(symbol);
+  if (details) {
+    res.json(details);
+  } else {
+    res.status(404).json({ error: `Detalhes não encontrados para ${symbol}` });
+  }
 });
 
 app.get('/api/preco-ativo/:ticker', async (req, res) => {
@@ -68,13 +68,12 @@ app.get('/api/dados', (req, res) => {
 app.post('/api/dados', (req, res) => {
   const { operacoes, lancamentos, proximoId } = req.body;
 
-  // Calcula o resultado de cada lançamento
   const lancamentosAtualizados = lancamentos.map(lanc => {
     let resultado = 0;
     if (lanc.precoSaida && lanc.precoSaida > 0) {
       if (lanc.operacao === 'COMPRA') {
         resultado = (lanc.precoSaida - lanc.precoEntrada) * lanc.quantidade;
-      } else { // VENDA
+      } else {
         resultado = (lanc.precoEntrada - lanc.precoSaida) * lanc.quantidade;
       }
     }
