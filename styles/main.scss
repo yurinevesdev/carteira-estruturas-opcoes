@@ -1,20 +1,21 @@
-@use 'themes/default' as *;
-@use 'base/reset';
-@use 'base/typography';
-@use 'layout/sidebar';
-@use 'layout/content';
-@use 'components/buttons';
-@use 'components/cards';
-@use 'components/forms';
-@use 'components/tables';
+@use "themes/default" as *;
+@use "base/reset";
+@use "base/typography";
+@use "layout/sidebar";
+@use "layout/content";
+@use "components/buttons";
+@use "components/cards";
+@use "components/forms";
+@use "components/tables";
+@use "components/notify";
 
 body {
-    font-family: $font-family-sans-serif;
-    background-color: $color-background;
-    color: $color-text;
+  font-family: $font-family-sans-serif;
+  background-color: $color-background;
+  color: $color-text;
 }
 
 .app-container {
-    display: flex;
-    min-height: 100vh;
+  display: flex;
+  min-height: 100vh;
 }

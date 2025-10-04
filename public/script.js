@@ -1,5 +1,6 @@
 const CONSTANTS = {
     AUTO_SAVE_INTERVAL: 30000,
+    QUOTE_UPDATE_INTERVAL: 60000 * 5,
     DEFAULT_CONFIG: {
         autoBackupInterval: 25,
         moedaPadrao: 'BRL',
@@ -73,8 +74,6 @@ const Calculator = {
             return (precoSaida - precoEntrada) * quantidade;
         }
 
-        console.log('exectou')
-
         return (precoEntrada - precoSaida) * quantidade;
     },
 
@@ -147,7 +146,8 @@ const API = {
     async buscarPrecoAcao(ativo) {
         try {
             const response = await fetch(`/api/preco-ativo/${ativo}`);
-            return response.json();
+            if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
+            return await response.json();
         } catch (error) {
             console.error(`Falha ao buscar preço para ${ativo}:`, error);
             return { error: error.message };
@@ -157,7 +157,8 @@ const API = {
     async buscarPrecoOpcao(ativoBase, opcao) {
         try {
             const response = await fetch(`/api/preco/opcao/${ativoBase}/${opcao}`);
-            return response.json();
+            if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
+            return await response.json();
         } catch (error) {
             console.error(`Falha ao buscar preço para ${opcao}:`, error);
             return { error: error.message };
@@ -197,7 +198,16 @@ const Utils = {
 
     getTimestampBackup() {
         return new Date().toISOString().replace(/[:.]/g, '-');
-    }
+    },
+
+    notify(msg, type = 'info') {
+        const container = DOMCache.get('notificacoes');
+        const div = document.createElement('div');
+        div.className = `alert alert-${type}`;
+        div.textContent = msg;
+        container.appendChild(div);
+        setTimeout(() => div.remove(), 4000);
+    },
 };
 
 const PriceUpdater = {
@@ -314,12 +324,24 @@ const TableRenderer = {
     },
 
     atualizarTabelaLancamentos() {
+        DOMCache.clear();
+
         const tabela = DOMCache.get('tabelaLancamentos');
-        tabela.innerHTML = State.lancamentos
+
+        const lancamentosOrdenados = State.lancamentos
+            .slice()
+            .sort((a, b) => {
+                if (a.estruturaId === b.estruturaId) {
+                    return a.id - b.id;
+                }
+                return a.estruturaId - b.estruturaId;
+            });
+
+        tabela.innerHTML = lancamentosOrdenados
             .map((lanc, index) => this.renderizarLinhaLancamento(lanc, index))
             .join('');
 
-        State.lancamentos.forEach((lanc, index) => {
+        lancamentosOrdenados.forEach((lanc, index) => {
             const isAberto = lanc.precoSaida === 0;
             if (!isAberto) return;
 
@@ -478,7 +500,7 @@ const Forms = {
         App.atualizarTodasViews();
         this.limparOperacao();
 
-        alert('✅ Operação salva com sucesso!');
+        Utils.notify('✅ Operação salva com sucesso!');
         Backup.verificarAutoBackup();
     },
 
@@ -487,7 +509,7 @@ const Forms = {
 
         const ativo = DOMCache.get('ativoLancamento').value.toUpperCase();
         if (!ativo) {
-            alert('Por favor, insira o código do ativo.');
+            Utils.notify('Por favor, insira o código do ativo.');
             return;
         }
 
@@ -515,11 +537,11 @@ const Forms = {
             if (editandoIndex !== '') {
                 State.lancamentos[parseInt(editandoIndex)] = lancamento;
                 this.cancelarEdicaoLancamento();
-                alert('✅ Lançamento atualizado com sucesso!');
+                Utils.notify('✅ Lançamento atualizado com sucesso!');
             } else {
                 State.lancamentos.push(lancamento);
                 this.limparLancamento();
-                alert('✅ Lançamento salvo com sucesso!');
+                Utils.notify('✅ Lançamento salvo com sucesso!');
             }
 
             await API.salvarDados();
@@ -527,7 +549,7 @@ const Forms = {
 
         } catch (error) {
             console.error('Erro ao salvar lançamento:', error);
-            alert(error.message);
+            Utils.notify(error.message);
         }
     },
 
@@ -618,7 +640,7 @@ const DataManager = {
                 await API.salvarDados();
                 App.atualizarTodasViews();
 
-                alert('🗑️ Todos os dados foram excluídos.\n\nO sistema está limpo para começar novamente.');
+                Utils.notify('🗑️ Todos os dados foram excluídos.\n\nO sistema está limpo para começar novamente.');
             }
         }
     }
@@ -855,7 +877,7 @@ const Backup = {
         State.config.ultimoBackup = new Date().toISOString();
 
         API.salvarDados();
-        alert('✅ Backup exportado com sucesso!');
+        Utils.notify('✅ Backup exportado com sucesso!');
     },
 
     async importar(event) {
@@ -876,10 +898,10 @@ const Backup = {
                     await API.salvarDados();
                     App.atualizarTodasViews();
 
-                    alert(`✅ Dados importados com sucesso!\n\n📊 Operações: ${State.operacoes.length}\n📈 Lançamentos: ${State.lancamentos.length}`);
+                    Utils.notify(`✅ Dados importados com sucesso!\n\n📊 Operações: ${State.operacoes.length}\n📈 Lançamentos: ${State.lancamentos.length}`);
                 }
             } catch (error) {
-                alert('❌ Erro ao importar dados.\n\nVerifique se o arquivo é um backup válido do sistema.');
+                Utils.notify('❌ Erro ao importar dados.\n\nVerifique se o arquivo é um backup válido do sistema.');
                 console.error('Erro na importação:', error);
             }
         };
@@ -900,7 +922,7 @@ const Backup = {
     },
 
     exportarPDF() {
-        alert('📄 Funcionalidade de PDF será implementada em breve!\n\nPor enquanto, você pode usar o relatório HTML e imprimir como PDF pelo navegador.');
+        Utils.notify('📄 Funcionalidade de PDF será implementada em breve!\n\nPor enquanto, você pode usar o relatório HTML e imprimir como PDF pelo navegador.');
     }
 };
 
@@ -943,7 +965,7 @@ const Config = {
     atualizarMoeda(moeda) {
         State.config.moedaPadrao = moeda;
         API.salvarDados();
-        alert('💱 Configuração salva!\n\nFuncionalidade de conversão de moeda será implementada em breve.');
+        Utils.notify('💱 Configuração salva!\n\nFuncionalidade de conversão de moeda será implementada em breve.');
     }
 };
 
@@ -962,7 +984,7 @@ const App = {
             console.log('🚀 Sistema de Trading Pro carregado com sucesso!');
             console.log('💡 Atalhos disponíveis: Ctrl+B (Backup), Ctrl+N (Nova Operação), Esc (Fechar Modal)');
         } catch (error) {
-            alert(error.message);
+            Utils.notify(error.message);
         }
     },
 
@@ -1059,6 +1081,10 @@ const App = {
                 API.salvarDados();
             }
         }, CONSTANTS.AUTO_SAVE_INTERVAL);
+
+        setInterval(() => {
+            TableRenderer.atualizarTabelaLancamentos();
+        }, CONSTANTS.QUOTE_UPDATE_INTERVAL);
     }
 };
 
