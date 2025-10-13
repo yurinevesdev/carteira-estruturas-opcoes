@@ -27,6 +27,7 @@ const State = {
     proximoId: 1,
     operacoesFiltradas: [],
     config: { ...CONSTANTS.DEFAULT_CONFIG },
+    editandoLancamento: false,
 
     reset() {
         this.operacoes = [];
@@ -34,6 +35,7 @@ const State = {
         this.proximoId = 1;
         this.operacoesFiltradas = [];
         this.config = { ...CONSTANTS.DEFAULT_CONFIG };
+        this.editandoLancamento = false;
     },
 
     getOperacaoById(id) {
@@ -133,7 +135,6 @@ const API = {
             throw new Error('Não foi possível salvar os dados no servidor.');
         }
     },
-
 
     async buscarDetalhesOpcao(ativo) {
         const response = await fetch(`/api/option-details/${ativo}`);
@@ -417,7 +418,7 @@ const Statistics = {
         DOMCache.get('operacoesAbertas').textContent = stats.operacoesAbertas;
 
         const resultadoCard = DOMCache.get('resultadoCard');
-        resultadoCard.className = `stat-card ${Utils.getClasseResultado(stats.resultadoTotal)}`;
+        resultadoCard.className = `stat-card card ${Utils.getClasseResultado(stats.resultadoTotal)}`;
     }
 };
 
@@ -432,7 +433,7 @@ const Dashboard = {
 
         const dashResultado = DOMCache.get('dashResultado');
         dashResultado.querySelector('.value').textContent = `R$ ${stats.resultadoTotal.toFixed(2)}`;
-        dashResultado.className = `stat-card ${Utils.getClasseResultado(stats.resultadoTotal)}`;
+        dashResultado.className = `stat-card card ${Utils.getClasseResultado(stats.resultadoTotal)}`;
 
         DOMCache.get('dashAbertas').textContent = stats.operacoesAbertas;
         DOMCache.get('dashTaxaAcerto').textContent = `${stats.taxaAcerto.toFixed(1)}%`;
@@ -479,6 +480,7 @@ const Forms = {
     limparLancamento() {
         DOMCache.get('formLancamento').reset();
         DOMCache.get('editandoIndex').value = '';
+        State.editandoLancamento = false;
     },
 
     async salvarOperacao(event) {
@@ -508,27 +510,42 @@ const Forms = {
         event.preventDefault();
 
         const ativo = DOMCache.get('ativoLancamento').value.toUpperCase();
+        const editandoIndex = DOMCache.get('editandoIndex').value;
+
         if (!ativo) {
             Utils.notify('Por favor, insira o código do ativo.');
             return;
         }
 
         try {
-            const optionData = await API.buscarDetalhesOpcao(ativo);
+            let tipo, strike, vencimento;
+
+            if (State.editandoLancamento && editandoIndex !== '') {
+                const lancamentoOriginal = State.lancamentos[parseInt(editandoIndex)];
+                tipo = lancamentoOriginal.tipo;
+                strike = lancamentoOriginal.strike;
+                vencimento = lancamentoOriginal.vencimento;
+            } else {
+                const optionData = await API.buscarDetalhesOpcao(ativo);
+                tipo = optionData.category;
+                strike = parseFloat(optionData.strike) || 0;
+                vencimento = optionData.due_date.split('T')[0];
+            }
+
             const precoEntrada = parseFloat(DOMCache.get('precoEntrada').value);
+            const precoSaida = parseFloat(DOMCache.get('precoSaida').value) || 0;
             const quantidade = parseInt(DOMCache.get('quantidade').value);
-            const editandoIndex = DOMCache.get('editandoIndex').value;
 
             const lancamento = {
                 estruturaId: parseInt(DOMCache.get('estruturaId').value),
                 ativo: ativo,
-                tipo: optionData.category,
+                tipo: tipo,
                 operacao: DOMCache.get('operacao').value,
-                strike: parseFloat(optionData.strike) || 0,
-                vencimento: optionData.due_date.split('T')[0],
+                strike: strike,
+                vencimento: vencimento,
                 quantidade: quantidade,
                 precoEntrada: precoEntrada,
-                precoSaida: 0,
+                precoSaida: precoSaida,
                 resultado: 0
             };
 
@@ -556,13 +573,12 @@ const Forms = {
     editarLancamento(index) {
         const lanc = State.lancamentos[index];
 
+        State.editandoLancamento = true;
+
         DOMCache.get('editandoIndex').value = index;
         DOMCache.get('estruturaId').value = lanc.estruturaId;
         DOMCache.get('ativoLancamento').value = lanc.ativo;
-        DOMCache.get('tipo').value = lanc.tipo;
         DOMCache.get('operacao').value = lanc.operacao;
-        DOMCache.get('strike').value = lanc.strike || '';
-        DOMCache.get('vencimento').value = lanc.vencimento || '';
         DOMCache.get('quantidade').value = lanc.quantidade;
         DOMCache.get('precoEntrada').value = lanc.precoEntrada;
         DOMCache.get('precoSaida').value = lanc.precoSaida;
@@ -571,10 +587,14 @@ const Forms = {
         DOMCache.get('btnSalvarLancamento').textContent = 'Atualizar Lançamento';
         DOMCache.get('btnSalvarLancamento').className = 'btn btn-warning';
 
-        DOMCache.get('formLancamento').scrollIntoView({ behavior: 'smooth' });
+        Navigation.showTab('lancamentos');
+        setTimeout(() => {
+            DOMCache.get('formLancamento').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
     },
 
     cancelarEdicaoLancamento() {
+        State.editandoLancamento = false;
         DOMCache.get('editandoIndex').value = '';
         DOMCache.get('tituloFormLancamento').textContent = 'Novo Lançamento';
         DOMCache.get('btnSalvarLancamento').textContent = 'Salvar Lançamento';

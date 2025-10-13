@@ -146,6 +146,30 @@
       "vencimento": "2025-10-17",
       "quantidade": 100,
       "precoEntrada": 0.46,
+      "precoSaida": 0.02,
+      "resultado": 44
+    },
+    {
+      "estruturaId": 3,
+      "ativo": "MGLUK834",
+      "tipo": "CALL",
+      "operacao": "VENDA",
+      "strike": 8.34,
+      "vencimento": "2025-11-21",
+      "quantidade": 100,
+      "precoEntrada": 1.03,
+      "precoSaida": 0,
+      "resultado": 0
+    },
+    {
+      "estruturaId": 3,
+      "ativo": "MGLUK874",
+      "tipo": "CALL",
+      "operacao": "COMPRA",
+      "strike": 8.74,
+      "vencimento": "2025-11-21",
+      "quantidade": 100,
+      "precoEntrada": 0.84,
       "precoSaida": 0,
       "resultado": 0
     }
